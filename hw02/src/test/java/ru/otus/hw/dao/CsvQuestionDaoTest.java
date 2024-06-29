@@ -1,15 +1,12 @@
 package ru.otus.hw.dao;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.otus.hw.config.TestFileNameProvider;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.exceptions.QuestionReadException;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -17,20 +14,11 @@ import static org.mockito.Mockito.when;
 
 class CsvQuestionDaoTest {
 
-    private static Properties properties;
-
-    @BeforeAll
-    public static void init() throws IOException {
-        properties = new Properties();
-        properties.load(CsvQuestionDaoTest.class.getResourceAsStream("/application.properties"));
-    }
-
     @Test
     void whenAllFound() {
         TestFileNameProvider fileNameProvider = mock(TestFileNameProvider.class);
         CsvQuestionDao csvQuestionDao = new CsvQuestionDao(fileNameProvider);
-        String fileName = properties.getProperty("test.fileName");
-        when(fileNameProvider.getTestFileName()).thenReturn(fileName);
+        when(fileNameProvider.getTestFileName()).thenReturn("questions.csv");
         var expected = List.of(
                 new Question("2*2=?",
                         List.of(new Answer("4", true),
@@ -47,8 +35,7 @@ class CsvQuestionDaoTest {
     void whenTryToReadFileThatNotExists() {
         TestFileNameProvider fileNameProvider = mock(TestFileNameProvider.class);
         CsvQuestionDao csvQuestionDao = new CsvQuestionDao(fileNameProvider);
-        String fileName = properties.getProperty("test.invalidFileName");
-        when(fileNameProvider.getTestFileName()).thenReturn(fileName);
+        when(fileNameProvider.getTestFileName()).thenReturn("not.csv");
         assertThrows(QuestionReadException.class, csvQuestionDao::findAll);
     }
 
