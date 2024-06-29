@@ -21,10 +21,10 @@ public class CsvQuestionDao implements QuestionDao {
 
     @Override
     public List<Question> findAll() {
-        var testFileName = this.fileNameProvider.getTestFileName();
+        var testFileName = fileNameProvider.getTestFileName();
         try (var inputStream = getClass().getClassLoader().getResourceAsStream(testFileName);
              var reader = new InputStreamReader(Objects.requireNonNull(inputStream))) {
-            var questionDtoList = this.getQuestionDtoList(reader);
+            var questionDtoList = getQuestionDtoList(reader);
             return questionDtoList.stream()
                     .map(QuestionDto::toDomainObject)
                     .collect(Collectors.toList());
