@@ -18,7 +18,7 @@ public class TestServiceImpl implements TestService {
     @Override
     public TestResult executeTestFor(Student student) {
         ioService.printLine("");
-        ioService.printFormattedLine("Please answer the questions below%n");
+        ioService.printLineLocalized("TestService.answer.the.questions");
         ioService.printLine("");
 
         var questions = questionDao.findAll();
@@ -39,8 +39,8 @@ public class TestServiceImpl implements TestService {
     }
 
     private boolean readStudentAnswer(Question question) {
-        var answerNumber = ioService.readIntForRangeWithPrompt(1, question.answers().size(),
-                "Enter the number of the correct answer", "Invalid input! Try again!");
+        var answerNumber = ioService.readIntForRangeWithPromptLocalized(1, question.answers().size(),
+                "TestService.enter.the.number", "TestService.invalid.input");
         return question.answers().get(answerNumber - 1).isCorrect();
     }
 
