@@ -24,7 +24,7 @@ class GenreServiceImplTest {
 
     @Test
     void whenAllGenresFound() {
-        List<GenreDTO> expectedGenres = List.of(
+        List<GenreDTO> expectedGenreDTOs = List.of(
                 new GenreDTO(1L, "Genre_1"),
                 new GenreDTO(2L, "Genre_2"),
                 new GenreDTO(3L, "Genre_3"),
@@ -32,6 +32,7 @@ class GenreServiceImplTest {
                 new GenreDTO(5L, "Genre_5"),
                 new GenreDTO(6L, "Genre_6")
         );
-        assertEquals(expectedGenres, genreService.findAll());
+        List<GenreDTO> actualGenreDTOs = genreService.findAll();
+        assertEquals(expectedGenreDTOs, actualGenreDTOs);
     }
 }

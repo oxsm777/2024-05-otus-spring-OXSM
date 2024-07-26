@@ -19,6 +19,7 @@ import ru.otus.hw.services.mappers.BookMapperImpl;
 import ru.otus.hw.services.mappers.GenreMapperImpl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,11 +33,11 @@ class BookServiceImplTest {
     @Autowired
     private BookService bookService;
 
-    private static List<BookDTO> books;
+    private static List<BookDTO> bookDTOs;
 
     @BeforeAll
-    public static void initFirstBook() {
-        books = List.of(
+    public static void initBookDTOs() {
+        bookDTOs = List.of(
                 new BookDTO(1L, "BookTitle_1",
                         new AuthorDTO(1L, "Author_1"),
                         List.of(new GenreDTO(1L, "Genre_1"), new GenreDTO(2L, "Genre_2"))),
@@ -51,42 +52,42 @@ class BookServiceImplTest {
 
     @Test
     void shouldReturnCorrectBookById() {
-        var actualBook = bookService.findById(1L);
-        assertThat(actualBook).isPresent().get().isEqualTo(books.get(0));
+        Optional<BookDTO> actualBookDTO = bookService.findById(1L);
+        assertThat(actualBookDTO).isPresent().get().isEqualTo(bookDTOs.get(0));
     }
 
     @Test
     void whenAllBooksFound() {
-        var actualBooks = bookService.findAll();
-        assertThat(actualBooks).isEqualTo(books);
+        List<BookDTO> actualBookDTOs = bookService.findAll();
+        assertThat(actualBookDTOs).isEqualTo(bookDTOs);
     }
 
     @Test
     @DirtiesContext
     void shouldSaveNewBook() {
-        var actualBook = bookService.insert("new_book", 1L, Set.of(1L, 2L));
-        var expectedBook = new BookDTO(4L, "new_book",
+        BookDTO actualBookDTO = bookService.insert("new_book", 1L, Set.of(1L, 2L));
+        BookDTO expectedBookDTO = new BookDTO(4L, "new_book",
                 new AuthorDTO(1L, "Author_1"),
                 List.of(new GenreDTO(1L, "Genre_1"), new GenreDTO(2L, "Genre_2")));
-        assertThat(actualBook).isEqualTo(expectedBook);
+        assertThat(actualBookDTO).isEqualTo(expectedBookDTO);
     }
 
     @Test
     @DirtiesContext
     void shouldUpdateBook() {
-        var actualBook = bookService.update(1L, "new_book", 1L, Set.of(1L, 2L));
-        var expectedBook = new BookDTO(1L, "new_book",
+        BookDTO actualBookDTO = bookService.update(1L, "new_book", 1L, Set.of(1L, 2L));
+        BookDTO expectedBookDTO = new BookDTO(1L, "new_book",
                 new AuthorDTO(1L, "Author_1"),
                 List.of(new GenreDTO(1L, "Genre_1"), new GenreDTO(2L, "Genre_2")));
-        assertThat(actualBook).isEqualTo(expectedBook);
+        assertThat(actualBookDTO).isEqualTo(expectedBookDTO);
     }
 
     @Test
     @DirtiesContext
     void shouldDeleteBook() {
         bookService.deleteById(1L);
-        var actualBooks = bookService.findAll();
-        assertThat(actualBooks).isEqualTo(List.of(books.get(1), books.get(2)));
+        List<BookDTO> actualBookDTOs = bookService.findAll();
+        assertThat(actualBookDTOs).isEqualTo(List.of(bookDTOs.get(1), bookDTOs.get(2)));
     }
 
 }

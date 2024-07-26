@@ -24,12 +24,13 @@ class AuthorServiceImplTest {
 
     @Test
     void whenAllAuthorsFound() {
-        List<AuthorDTO> expectedAuthors = List.of(
+        List<AuthorDTO> expectedAuthorDTOs = List.of(
                 new AuthorDTO(1L, "Author_1"),
                 new AuthorDTO(2L, "Author_2"),
                 new AuthorDTO(3L, "Author_3")
         );
-        assertEquals(expectedAuthors, authorService.findAll());
+        List<AuthorDTO> actualAuthorDTOs = authorService.findAll();
+        assertEquals(expectedAuthorDTOs, actualAuthorDTOs);
     }
 
 }

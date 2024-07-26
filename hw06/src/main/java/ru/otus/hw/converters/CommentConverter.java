@@ -11,9 +11,9 @@ public class CommentConverter {
     private final BookConverter bookConverter;
 
     public String commentToString(CommentDTO comment) {
-        return "Id: %d, text: %s, book: {%s}".formatted(
+        return "Id: %d, text: %s, bookId: %d".formatted(
                 comment.getId(),
                 comment.getText(),
-                bookConverter.bookToString(comment.getBook()));
+                comment.getBookId());
     }
 }
