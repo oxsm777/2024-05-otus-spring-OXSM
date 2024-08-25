@@ -32,17 +32,17 @@ public class BookServiceImpl implements BookService {
 
     private final CommentRepository commentRepository;
 
+    private final CommentService commentService;
+
     private final BookMapper bookMapper;
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<BookDTO> findById(String id) {
         Optional<Book> book = bookRepository.findById(id);
         return book.map(bookMapper::toDto);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<BookDTO> findAll() {
         List<Book> books = bookRepository.findAll();
         return bookMapper.toDto(books);
@@ -57,7 +57,9 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookDTO update(String id, String title, String authorId, Set<String> genresIds) {
-        return bookMapper.toDto(save(id, title, authorId, genresIds));
+        Book book = save(id, title, authorId, genresIds);
+        commentService.updateAllCommentsByBook(book);
+        return bookMapper.toDto(book);
     }
 
     @Override
@@ -82,4 +84,5 @@ public class BookServiceImpl implements BookService {
         var book = new Book(id, title, author, genres);
         return bookRepository.save(book);
     }
+
 }

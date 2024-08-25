@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
@@ -20,6 +21,9 @@ class CommentRepositoryTest {
 
     @Autowired
     private CommentRepository repository;
+
+    @Autowired
+    private MongoOperations mongoOperations;
 
     @DisplayName("должен загружать список комментариев по id книги")
     @Test
@@ -45,6 +49,6 @@ class CommentRepositoryTest {
                                 new Author("2", "Author_2"),
                                 List.of(new Genre("2", "Genre_2"), new Genre("3", "Genre_3"))))
         );
-        assertThat(repository.findAll()).isEqualTo(expectedComments);
+        assertThat(mongoOperations.findAll(Comment.class)).isEqualTo(expectedComments);
     }
 }

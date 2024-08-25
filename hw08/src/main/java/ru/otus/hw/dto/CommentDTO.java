@@ -13,5 +13,5 @@ public class CommentDTO {
 
     private String text;
 
-    private String bookId;
+    private BookDTO book;
 }

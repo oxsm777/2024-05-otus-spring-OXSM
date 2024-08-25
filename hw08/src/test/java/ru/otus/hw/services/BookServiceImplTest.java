@@ -5,15 +5,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.AuthorDTO;
 import ru.otus.hw.dto.BookDTO;
+import ru.otus.hw.dto.CommentDTO;
 import ru.otus.hw.dto.GenreDTO;
-import ru.otus.hw.services.mappers.AuthorMapperImpl;
-import ru.otus.hw.services.mappers.BookMapperImpl;
-import ru.otus.hw.services.mappers.GenreMapperImpl;
+import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Comment;
+import ru.otus.hw.services.mappers.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,12 +24,22 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataMongoTest
-@Import({BookServiceImpl.class, BookMapperImpl.class, AuthorMapperImpl.class, GenreMapperImpl.class})
+@Import({BookServiceImpl.class, BookMapperImpl.class, AuthorMapperImpl.class, GenreMapperImpl.class,
+        CommentServiceImpl.class, CommentMapperImpl.class, BookMapperImpl.class})
 @Transactional(propagation = Propagation.NEVER)
 class BookServiceImplTest {
 
     @Autowired
     private BookService bookService;
+
+    @Autowired
+    private MongoOperations mongoOperations;
+
+    @Autowired
+    private CommentMapper commentMapper;
+
+    @Autowired
+    private BookMapper bookMapper;
 
     private static List<BookDTO> bookDTOs;
 
@@ -59,25 +71,28 @@ class BookServiceImplTest {
     @DirtiesContext
     void shouldSaveNewBook() {
         bookService.insert("new_book", "1", Set.of("1"));
-        List<BookDTO> actualBookDTOs = bookService.findAll();
+        List<BookDTO> actualBookDTOs = bookMapper.toDto(mongoOperations.findAll(Book.class));
         assertThat(actualBookDTOs.size()).isEqualTo(3);
     }
 
     @Test
     @DirtiesContext
-    void shouldUpdateBook() {
+    void shouldUpdateBookAndComments() {
         BookDTO actualBookDTO = bookService.update("1", "new_book", "1", Set.of("1"));
         BookDTO expectedBookDTO = new BookDTO("1", "new_book",
                 new AuthorDTO("1", "Author_1"),
                 List.of(new GenreDTO("1", "Genre_1")));
         assertThat(actualBookDTO).isEqualTo(expectedBookDTO);
+        CommentDTO actualCommentDTO = commentMapper.toDto(mongoOperations.findById("1", Comment.class));
+        CommentDTO expectedCommentDTO = new CommentDTO("1", "Comment_1", expectedBookDTO);
+        assertThat(actualCommentDTO).isEqualTo(expectedCommentDTO);
     }
 
     @Test
     @DirtiesContext
     void shouldDeleteBook() {
         bookService.deleteById("1");
-        List<BookDTO> actualBookDTOs = bookService.findAll();
+        List<BookDTO> actualBookDTOs = bookMapper.toDto(mongoOperations.findAll(Book.class));
         assertThat(actualBookDTOs).isEqualTo(List.of(bookDTOs.get(1)));
     }
 
