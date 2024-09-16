@@ -37,11 +37,11 @@
 
     <div class="row">
         <label for="book-author">Author:</label>
-        <select id="book-author" name="author" th:field="*{author.id}" required>
+        <select id="book-author" name="authorId" required>
             <option th:each="author : ${authors}"
                     th:value="${author.id}"
                     th:text="${author.fullName}"
-                    th:selected="${author.equals(book.author)}"></option>
+                    th:selected="${author.id == book.authorId}"></option>
         </select>
     </div>
 
@@ -51,7 +51,7 @@
             <option th:each="genre : ${genres}"
                     th:value="${genre.id}"
                     th:text="${genre.name}"
-                    th:selected="${#lists.contains(book.genres, genre)}"></option>
+                    th:selected="${#lists.contains(book.genreIds, genre.id)}"></option>
         </select>
     </div>
 

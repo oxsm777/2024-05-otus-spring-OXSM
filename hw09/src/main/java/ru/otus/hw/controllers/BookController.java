@@ -7,17 +7,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.dto.AuthorDTO;
 import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.dto.GenreDTO;
+import ru.otus.hw.dto.RequestBookDTO;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -38,9 +38,9 @@ public class BookController {
 
     @GetMapping("/edit/{id}")
     public String editBook(@PathVariable("id") long id, Model model) {
-        BookDTO bookDTO = bookService.findById(id)
+        RequestBookDTO requestBookDTO = bookService.findBookById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
-        model.addAttribute("book", bookDTO);
+        model.addAttribute("book", requestBookDTO);
         List<AuthorDTO> authorDTOs = authorService.findAll();
         model.addAttribute("authors", authorDTOs);
         List<GenreDTO> genreDTOs = genreService.findAll();
@@ -49,8 +49,8 @@ public class BookController {
     }
 
     @PostMapping("/edit")
-    public String saveBook(@ModelAttribute("book") BookDTO book, @RequestParam("genreIds") Set<Long> genreIds) {
-        bookService.update(book.getId(), book.getTitle(), book.getAuthor().getId(), genreIds);
+    public String saveBook(@ModelAttribute("book") RequestBookDTO book) {
+        bookService.update(book.getId(), book.getTitle(), book.getAuthorId(), new HashSet<>(book.getGenreIds()));
         return "redirect:/";
     }
 
@@ -70,10 +70,8 @@ public class BookController {
     }
 
     @PostMapping("/create")
-    public String saveNewBook(@RequestParam("title") String title,
-                              @RequestParam("authorId") long authorId,
-                              @RequestParam("genreIds") Set<Long> genreIds) {
-        bookService.insert(title, authorId, genreIds);
+    public String saveNewBook(@ModelAttribute("book") RequestBookDTO book) {
+        bookService.insert(book.getTitle(), book.getAuthorId(), new HashSet<>(book.getGenreIds()));
         return "redirect:/";
     }
 }

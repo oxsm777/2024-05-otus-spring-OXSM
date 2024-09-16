@@ -5,12 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.BookDTO;
+import ru.otus.hw.dto.RequestBookDTO;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
 import ru.otus.hw.services.mappers.BookMapper;
+import ru.otus.hw.services.mappers.RequestBookMapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,11 +33,20 @@ public class BookServiceImpl implements BookService {
 
     private final BookMapper bookMapper;
 
+    private final RequestBookMapper requestBookMapper;
+
     @Override
     @Transactional(readOnly = true)
     public Optional<BookDTO> findById(long id) {
         Optional<Book> book = bookRepository.findById(id);
         return book.map(bookMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<RequestBookDTO> findBookById(long id) {
+        Optional<Book> book = bookRepository.findById(id);
+        return book.map(requestBookMapper::toDto);
     }
 
     @Override
@@ -56,12 +67,6 @@ public class BookServiceImpl implements BookService {
     public BookDTO update(long id, String title, long authorId, Set<Long> genresIds) {
         return bookMapper.toDto(save(id, title, authorId, genresIds));
     }
-
-//    @Override
-//    @Transactional
-//    public BookDTO update(BookDTO bookDTO) {
-//        return bookMapper.toDto(save(id, title, authorId, genresIds));
-//    }
 
     @Override
     @Transactional

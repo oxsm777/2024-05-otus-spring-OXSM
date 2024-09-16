@@ -9,6 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.dto.AuthorDTO;
 import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.dto.GenreDTO;
+import ru.otus.hw.dto.RequestBookDTO;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
@@ -56,7 +57,8 @@ class BookControllerTest {
 
     @Test
     void editBook() throws Exception {
-        when(bookService.findById(1L)).thenReturn(Optional.of(bookDTO));
+        RequestBookDTO requestBookDTO = new RequestBookDTO(1L, "Test Book", 1L, new ArrayList<>());
+        when(bookService.findBookById(1L)).thenReturn(Optional.of(requestBookDTO));
         when(authorService.findAll()).thenReturn(List.of(new AuthorDTO(1L, "Author Name")));
         when(genreService.findAll()).thenReturn(List.of(new GenreDTO(1L, "Genre Name")));
         mockMvc.perform(get("/edit/1"))
@@ -73,7 +75,7 @@ class BookControllerTest {
         mockMvc.perform(post("/edit")
                         .param("id", "1")
                         .param("title", "Updated Title")
-                        .param("author.id", "1")
+                        .param("authorId", "1")
                         .param("genreIds", "1", "2"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"));

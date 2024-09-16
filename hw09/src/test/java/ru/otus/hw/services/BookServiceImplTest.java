@@ -11,9 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.AuthorDTO;
 import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.dto.GenreDTO;
-import ru.otus.hw.services.mappers.AuthorMapperImpl;
-import ru.otus.hw.services.mappers.BookMapperImpl;
-import ru.otus.hw.services.mappers.GenreMapperImpl;
+import ru.otus.hw.services.mappers.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +20,8 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import({BookServiceImpl.class, BookMapperImpl.class, AuthorMapperImpl.class, GenreMapperImpl.class})
+@Import({BookServiceImpl.class, BookMapperImpl.class, AuthorMapperImpl.class, GenreMapperImpl.class,
+        RequestBookMapperImpl.class, RequestGenreMapperImpl.class})
 @Transactional(propagation = Propagation.NEVER)
 class BookServiceImplTest {
 
