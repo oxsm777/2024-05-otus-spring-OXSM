@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.otus.hw.config.SecurityConfig;
 import ru.otus.hw.dto.AuthorDTO;
 import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.dto.RequestBookDTO;
@@ -23,8 +21,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(BookController.class)
-@Import(SecurityConfig.class)
+@WebMvcTest(controllers = BookController.class,
+        excludeAutoConfiguration = SecurityAutoConfiguration.class)
 class BookControllerTest {
 
     public static final String ERROR = "Entity not found!";
@@ -45,10 +43,6 @@ class BookControllerTest {
         bookDTO = new BookDTO(1L, "Test Book", new AuthorDTO(1L, "Author Name"), new ArrayList<>());
     }
 
-    @WithMockUser(
-            username = "user",
-            authorities = {"ROLE_USER"}
-    )
     @Test
     void shouldReturnCorrectBooksList() throws Exception {
         List<BookDTO> books = List.of(bookDTO);
@@ -58,10 +52,6 @@ class BookControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(books)));
     }
 
-    @WithMockUser(
-            username = "user",
-            authorities = {"ROLE_USER"}
-    )
     @Test
     void shouldReturnCorrectBookById() throws Exception {
         when(bookService.findById(1L)).thenReturn(Optional.of(bookDTO));
@@ -70,10 +60,6 @@ class BookControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(bookDTO)));
     }
 
-    @WithMockUser(
-            username = "user",
-            authorities = {"ROLE_USER"}
-    )
     @Test
     void shouldUpdateBook() throws Exception {
         RequestBookDTO requestBook = new RequestBookDTO(1L,"New Title", 2L, List.of(1L));
@@ -84,10 +70,6 @@ class BookControllerTest {
         verify(bookService).update(eq(1L), eq("New Title"), eq(2L), anySet());
     }
 
-    @WithMockUser(
-            username = "user",
-            authorities = {"ROLE_USER"}
-    )
     @Test
     void shouldDeleteBookById() throws Exception {
         doNothing().when(bookService).deleteById(1L);
@@ -97,10 +79,6 @@ class BookControllerTest {
         verify(bookService).deleteById(1);
     }
 
-    @WithMockUser(
-            username = "user",
-            authorities = {"ROLE_USER"}
-    )
     @Test
     void shouldInsertNewBook() throws Exception {
         RequestBookDTO requestBook = new RequestBookDTO(0, "New Book", 2L, List.of(2L));
@@ -111,10 +89,6 @@ class BookControllerTest {
         verify(bookService).insert(eq("New Book"), eq(2L), anySet());
     }
 
-    @WithMockUser(
-            username = "user",
-            authorities = {"ROLE_USER"}
-    )
     @Test
     void shouldReturnExpectedErrorWhenBookNotFound() throws Exception {
         when(bookService.findById(5L)).thenReturn(Optional.empty());

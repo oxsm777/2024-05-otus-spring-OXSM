@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.otus.hw.config.SecurityConfig;
 import ru.otus.hw.dto.CommentDTO;
 import ru.otus.hw.services.CommentService;
 
@@ -23,8 +21,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(CommentController.class)
-@Import(SecurityConfig.class)
+@WebMvcTest(controllers = CommentController.class,
+        excludeAutoConfiguration = SecurityAutoConfiguration.class)
 class CommentControllerTest {
 
     public static final String ERROR = "Entity not found!";
@@ -45,10 +43,6 @@ class CommentControllerTest {
         commentDTO = new CommentDTO(1L, "Text", 1L);
     }
 
-    @WithMockUser(
-            username = "user",
-            authorities = {"ROLE_USER"}
-    )
     @Test
     void shouldReturnCorrectCommentsListByBookId() throws Exception {
         List<CommentDTO> comments = List.of(commentDTO);
@@ -58,10 +52,6 @@ class CommentControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(comments)));
     }
 
-    @WithMockUser(
-            username = "user",
-            authorities = {"ROLE_USER"}
-    )
     @Test
     void shouldReturnCorrectCommentById() throws Exception {
         when(commentService.findById(1L)).thenReturn(Optional.of(commentDTO));
@@ -70,10 +60,6 @@ class CommentControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(commentDTO)));
     }
 
-    @WithMockUser(
-            username = "user",
-            authorities = {"ROLE_USER"}
-    )
     @Test
     void shouldUpdateComment() throws Exception {
         CommentDTO updatedComment = new CommentDTO(1L,"New Text", 2L);
@@ -84,10 +70,6 @@ class CommentControllerTest {
         verify(commentService).update(eq(1L), eq("New Text"), eq(2L));
     }
 
-    @WithMockUser(
-            username = "user",
-            authorities = {"ROLE_USER"}
-    )
     @Test
     void shouldDeleteCommentById() throws Exception {
         doNothing().when(commentService).deleteById(1L);
@@ -97,10 +79,6 @@ class CommentControllerTest {
         verify(commentService).deleteById(1);
     }
 
-    @WithMockUser(
-            username = "user",
-            authorities = {"ROLE_USER"}
-    )
     @Test
     void shouldInsertNewComment() throws Exception {
         CommentDTO newComment = new CommentDTO(0, "New Text", 2L);
@@ -111,10 +89,6 @@ class CommentControllerTest {
         verify(commentService).insert(eq("New Text"), eq(2L));
     }
 
-    @WithMockUser(
-            username = "user",
-            authorities = {"ROLE_USER"}
-    )
     @Test
     void shouldReturnExpectedErrorWhenCommentNotFound() throws Exception {
         when(commentService.findById(5L)).thenReturn(Optional.empty());

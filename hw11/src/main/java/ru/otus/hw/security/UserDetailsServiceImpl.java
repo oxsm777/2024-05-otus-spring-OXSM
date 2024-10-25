@@ -5,8 +5,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.models.Role;
 import ru.otus.hw.models.User;
-import ru.otus.hw.services.UserService;
+import ru.otus.hw.repositories.UserRepository;
 
 import static org.springframework.security.core.userdetails.User.builder;
 
@@ -14,16 +16,17 @@ import static org.springframework.security.core.userdetails.User.builder;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userService.findUserByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .roles(user.getRole().getName())
+                .roles(user.getRoles().stream().map(Role::getName).toArray(String[]::new))
                 .build();
     }
 }

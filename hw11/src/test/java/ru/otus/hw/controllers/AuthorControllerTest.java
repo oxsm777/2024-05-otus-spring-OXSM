@@ -3,12 +3,10 @@ package ru.otus.hw.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.otus.hw.config.SecurityConfig;
 import ru.otus.hw.dto.AuthorDTO;
 import ru.otus.hw.services.AuthorService;
 
@@ -19,8 +17,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(AuthorController.class)
-@Import(SecurityConfig.class)
+@WebMvcTest(controllers = AuthorController.class,
+        excludeAutoConfiguration = SecurityAutoConfiguration.class)
 class AuthorControllerTest {
 
     @Autowired
@@ -32,10 +30,6 @@ class AuthorControllerTest {
     @Autowired
     private ObjectMapper mapper;
 
-    @WithMockUser(
-            username = "user",
-            authorities = {"ROLE_USER"}
-    )
     @Test
     void shouldReturnCorrectAuthorsList() throws Exception {
         List<AuthorDTO> authors = List.of(new AuthorDTO(1L, "Test Author"));

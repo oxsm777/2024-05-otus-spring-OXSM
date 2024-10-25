@@ -19,6 +19,9 @@ values ('text_1', 1), ('text_2', 2), ('text_3', 1);
 insert into roles (name)
 values ('ADMIN'), ('USER');
 
-insert into users (username, password, role_id)
-values ('admin', '$2a$10$TiS3QX0I294eY0CYDtvL2.QCNSz6N2I.LEyXvhQ03yyqXt4uoAxe6', 1),
-       ('user', '$2a$10$/5JpkkvA4wqXzC3ajC/4t.X9ftBPw67/O7CyNZw1BlNMm4xLNlloK', 2);
+insert into users (username, password)
+values ('admin', '$2a$10$TiS3QX0I294eY0CYDtvL2.QCNSz6N2I.LEyXvhQ03yyqXt4uoAxe6'),
+       ('user', '$2a$10$/5JpkkvA4wqXzC3ajC/4t.X9ftBPw67/O7CyNZw1BlNMm4xLNlloK');
+
+insert into users_roles (user_id, role_id)
+values (1, 1), (2, 2);
